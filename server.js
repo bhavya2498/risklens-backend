@@ -2,9 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
+const authRoutes = require('./routes/auth');
 
 const app = express();
+
 app.use(cors());
+app.use(express.json());
+
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -19,7 +25,11 @@ let db;
 
 async function connectDB() {
   await client.connect();
-  db = client.db('risklens'); // database name — matches seed.js
+
+  await mongoose.connect(MONGODB_URI);
+
+  db = client.db('risklens');
+
   console.log('Connected to MongoDB Atlas (risklens database)');
 }
 
